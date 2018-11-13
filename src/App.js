@@ -1,25 +1,65 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+
+import firebase from 'firebase';
 import './App.css';
 
 class App extends Component {
+
+  constructor(){
+    super();
+    this.state = {
+      user:null
+    }
+  }
+
+  componentWillMount(){
+    firebase.auth().onAuthStateChanged(user=>{
+      this.setState({user});
+    })
+  }
+
+  handleAuth(){
+  const provider = new firebase.auth.GoogleAuthProvider();
+  
+  firebase.auth().signInWithPopup(provider)
+  .then(result => console.log(result))
+  .catch(error => console.log(error))
+
+}
+  hangleLogout(){
+    firebase.auth().signOut()
+    .then(result => console.log(`${result} ha cerrado sesion`))
+    .catch(error => console.log(error))
+  }
+
+renderLoginButton(){
+  if(this.state.user){
+    return(
+      <div>
+        hola {this.state.user.displayName}
+      </div>
+    );
+  }else{
+    return(
+    <button
+    onClick={this.handleAuth}
+    >LogIn</button>
+    )
+  }
+}
+
   render() {
     return (
       <div className="App">
         <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
+         
           <p>
-            Edit <code>src/App.js</code> and save to reload.
+          bienvenido a reactgram
           </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
+        {this.renderLoginButton()}
         </header>
+
+       
       </div>
     );
   }
